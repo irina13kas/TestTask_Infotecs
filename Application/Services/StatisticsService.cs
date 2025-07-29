@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
-    public class StaticticsService : IStatisticsService
+    public class StatisticsService : IStatisticsService
     {
         private readonly AppDbContext _db;
 
-        public StaticticsService(AppDbContext db)
+        public StatisticsService(AppDbContext db)
         {
             _db = db;
         }
@@ -23,5 +23,7 @@ namespace Application.Services
 
             return query;
         }
+
+        
     }
 }

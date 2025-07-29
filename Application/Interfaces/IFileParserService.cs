@@ -1,4 +1,5 @@
 ﻿using Domain.DTOs;
+using Domain.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,6 @@ namespace Application.Interfaces
     public interface IFileParserService
     {
         Task<List<CsvValueDto>> ParseAndValidateAsync(IFormFile fileStream);
-        Task SaveToDbAsync(List<CsvValueDto> records, string fileName);
+        Task<ResultEntry> SaveToDbAsync(List<CsvValueDto> records, string fileName);
     }
 }

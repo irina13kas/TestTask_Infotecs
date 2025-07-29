@@ -20,7 +20,7 @@ namespace Application.Services
 
             if(!string.IsNullOrWhiteSpace(filter.FileName))
             {
-                query = query.Where(x => x.FileName == filter.FileName);
+                query = query.Where(x => x.FileName.StartsWith(filter.FileName));
             }
 
             if (filter.StartDate.HasValue)

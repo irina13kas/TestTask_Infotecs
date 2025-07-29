@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250724221647_Init")]
+    [Migration("20250729130105_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -30,11 +30,11 @@ namespace Infrastructure.Migrations
                     b.Property<string>("FileName")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("AvgExecutionTime")
-                        .HasColumnType("numeric");
+                    b.Property<double>("AvgExecutionTime")
+                        .HasColumnType("double precision");
 
-                    b.Property<decimal>("AvgValue")
-                        .HasColumnType("numeric");
+                    b.Property<double>("AvgValue")
+                        .HasColumnType("double precision");
 
                     b.Property<int>("DeltaDate")
                         .HasColumnType("integer");
@@ -42,8 +42,8 @@ namespace Infrastructure.Migrations
                     b.Property<double>("MaxValue")
                         .HasColumnType("double precision");
 
-                    b.Property<decimal>("MedianValue")
-                        .HasColumnType("numeric");
+                    b.Property<double>("MedianValue")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTime>("MinDateAndTime")
                         .HasColumnType("timestamp with time zone");
@@ -53,7 +53,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("FileName");
 
-                    b.ToTable("Results");
+                    b.ToTable("Results", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.ValueEntry", b =>
@@ -67,8 +67,8 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ExecutionTime")
-                        .HasColumnType("integer");
+                    b.Property<double>("ExecutionTime")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("FileName")
                         .IsRequired()
@@ -79,7 +79,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Values");
+                    b.HasIndex("FileName", "Date");
+
+                    b.ToTable("Values", (string)null);
                 });
 #pragma warning restore 612, 618
         }

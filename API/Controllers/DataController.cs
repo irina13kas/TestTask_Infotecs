@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces;
 using Domain.DTOs;
-
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -39,9 +38,9 @@ namespace API.Controllers
             try
             {
                 var parserData = await _fileParser.ParseAndValidateAsync(file);
-                await _fileParser.SaveToDbAsync(parserData, file.FileName);
+                var resultRecord = await _fileParser.SaveToDbAsync(parserData, file.FileName);
 
-                return Ok("Файл успешно добавлен в базу данных");
+                return Ok(resultRecord);
             }
             catch (ValidationException validEx)
             {

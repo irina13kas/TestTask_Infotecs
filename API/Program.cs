@@ -1,3 +1,5 @@
+using Application.Interfaces;
+using Application.Services;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +14,12 @@ namespace API
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddScoped<ICsvValidator, CsvValidator>();
+            builder.Services.AddScoped<IFileParserService, FileParserService>();
+            builder.Services.AddScoped<IResultFilterService, ResultFilterService>();
+            builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 

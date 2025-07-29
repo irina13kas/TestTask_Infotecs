@@ -3,6 +3,7 @@ using Domain.DTOs;
 using Domain.Models;
 using Infrastructure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
@@ -36,7 +37,7 @@ namespace Application.Services
                     continue;
                 }
 
-                var parts = line.Split(',');
+                var parts = line.Split(';');
                 if (parts.Count() != 3)
                 {
                     throw new ValidationException("Неверный формат строки. Кол-во значений должно равняться трём");
@@ -56,7 +57,7 @@ namespace Application.Services
 
                 records.Add(new CsvValueDto
                 {
-                    Date = date,
+                    Date = DateTime.SpecifyKind(date, DateTimeKind.Utc),
                     ExecitionTime = execTime,
                     Value = value
                 });
@@ -67,12 +68,17 @@ namespace Application.Services
 
         }
 
-        public async Task SaveToDbAsync(List<CsvValueDto> records, string fileName)
+        public async Task<ResultEntry> SaveToDbAsync(List<CsvValueDto> records, string fileName)
         {
             using var transaction = await _db.Database.BeginTransactionAsync();
-
+            ResultEntry result = new ResultEntry();
             try
             {
+                var oldValues = _db.Values.Where(x => x.FileName == fileName);
+                _db.RemoveRange(oldValues);
+
+                await _db.SaveChangesAsync();
+
                 var values = records.Select(r => new ValueEntry
                 {
                     FileName = fileName,
@@ -83,8 +89,7 @@ namespace Application.Services
 
                 await _db.Values.AddRangeAsync(values);
 
-                //if(_db.Results.Find(r => r.FileName == fileName))
-                var result = new ResultEntry
+                result = new ResultEntry
                 {
                     FileName = fileName,
                     DeltaDate = (values.Max(x => x.Date) - values.Min(x => x.Date)).Seconds,
@@ -95,18 +100,34 @@ namespace Application.Services
                     MaxValue = values.Max(x => x.Value),
                     MinValue = values.Min(x => x.Value)
                 };
+                var existingResult = await _db.Results.FindAsync(fileName);
+                if (existingResult != null)
+                {
+                    existingResult.DeltaDate = result.DeltaDate;
+                    existingResult.MinDateAndTime = result.MinDateAndTime;
+                    existingResult.AvgExecutionTime = result.AvgExecutionTime;
+                    existingResult.AvgValue = result.AvgValue;
+                    existingResult.MedianValue = result.MedianValue;
+                    existingResult.MaxValue = result.MaxValue;
+                    existingResult.MinValue = result.MinValue;
+                }
+                else
+                {
 
-                _db.Results.Add(result);
+                    await _db.Results.AddAsync(result);
+                }
 
                 await _db.SaveChangesAsync();
 
                 await transaction.CommitAsync();
+                
             }
             catch(Exception ex)
             {
                 await transaction.RollbackAsync();
                 throw;
             }
+            return result;
         }
 
         double GetMedian(List<ValueEntry> values)
