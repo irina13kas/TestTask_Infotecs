@@ -1,11 +1,12 @@
 using Application.Services;
 using Domain.DTOs;
+using NUnit.Framework;
 using System.ComponentModel.DataAnnotations;
 
-namespace TestTask_tests_1
+namespace TestTask_tests
 {
     [TestFixture]
-    public class Tests
+    public class CsvValidatorTests
     {
         private CsvValidator _validator;
 
@@ -39,7 +40,7 @@ namespace TestTask_tests_1
             records.Add(new CsvValueDto { Date = tomorrowDate, Value = 1.0, ExecitionTime = 23.4 });
             records.Add(new CsvValueDto { Date = oldDate, Value = 1.0, ExecitionTime = 14.6 });
 
-            foreach(var record in records)
+            foreach (var record in records)
             {
                 Assert.Throws<ValidationException>(() => _validator.Validate(new List<CsvValueDto> { record }));
             }
@@ -50,7 +51,7 @@ namespace TestTask_tests_1
         {
             var value = -1.0;
             var records = new List<CsvValueDto>();
-            records.Add(new CsvValueDto {Date = DateTime.Today, Value = value, ExecitionTime = 1.0 });
+            records.Add(new CsvValueDto { Date = DateTime.Today, Value = value, ExecitionTime = 1.0 });
 
             Assert.Throws<ValidationException>(() => _validator.Validate(records));
         }
@@ -76,5 +77,7 @@ namespace TestTask_tests_1
 
             Assert.DoesNotThrow(() => _validator.Validate(records));
         }
+
+
     }
 }

@@ -1,9 +1,7 @@
 ﻿using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Domain.Models;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Application.Services;
-using System.Threading.Tasks;
 using Domain.DTOs;
 
 namespace TestTask_tests;
